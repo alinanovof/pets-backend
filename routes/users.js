@@ -1,23 +1,28 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-const { addUser, getUserByEmail } = require('../data/users');
-
+const { addUser, getUserByEmail, getUserById } = require('../data/users');
+const jwt = require('jsonwebtoken')
 const router = express.Router();
+const { auth } = require('../middlewares/auth');
 
 router.post('/', async (req, res, next) => {
-  const { email, password } = req.body;
+  const { email, password,  first_name, last_name, tel } = req.body;
   bcrypt.hash(password, 10, async (err, hash) => {
     if (err) next(err);
     else {
-      // const user = await getUserByEmail(email);
-      // if (user) {
-      //   res.status(403).send('user already exists with this email');
-      //   return;
-      // }
-      await addUser(email, hash);
+      await addUser(email, hash,  first_name, last_name, tel);
       res.send({ user: { email } });
     }
   })
+});
+
+router.get('/', auth, async (req, res) => {
+  const userId = req.user.id;
+  const user = await getUserById(userId);
+  if(!user){
+    res.status(401).send({ message: 'No user'})
+  }
+  res.send({ user: user });
 });
 
 router.post('/login', async (req, res, next) => {
@@ -31,9 +36,14 @@ router.post('/login', async (req, res, next) => {
     if (err) next(err);
     else {
       if (result) {
+        const token = jwt.sign({ id: user.id }, "secretPasswordush")
         res.send({
+          token,
           user: {
             email: user.email,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            tel: user.tel,
             created_date: user.created_date,
             id: user.id
           }
@@ -44,5 +54,9 @@ router.post('/login', async (req, res, next) => {
     }
   });
 })
+
+// router.post('/logout', auth, async (req, res) =>{
+  
+// })
 
 module.exports = router;

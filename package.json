@@ -34,6 +34,9 @@
     "mysql": "^2.18.1",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
-    "postgrator": "^4.1.1"
+    "pino": "^6.11.3",
+    "pino-http": "^5.5.0",
+    "postgrator": "^4.1.1",
+    "uuid": "^8.3.2"
   }
 }
