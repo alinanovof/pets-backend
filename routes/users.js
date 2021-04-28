@@ -7,7 +7,7 @@ const { auth } = require('../middlewares/auth');
 
 router.post('/', async (req, res, next) => {
   const { email, password,  first_name, last_name, tel } = req.body;
-  bcrypt.hash(password, 10, async (err, hash) => {
+  bcrypt.hash(password, 10, async function  (err, hash) {
     if (err) next(err);
     else {
       await addUser(email, hash,  first_name, last_name, tel);
@@ -19,9 +19,6 @@ router.post('/', async (req, res, next) => {
 router.get('/', auth, async (req, res) => {
   const userId = req.user.id;
   const user = await getUserById(userId);
-  if(!user){
-    res.status(401).send({ message: 'No user'})
-  }
   res.send({ user: user });
 });
 
@@ -54,9 +51,5 @@ router.post('/login', async (req, res, next) => {
     }
   });
 })
-
-// router.post('/logout', auth, async (req, res) =>{
-  
-// })
 
 module.exports = router;
