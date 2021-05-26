@@ -7,7 +7,7 @@ function auth(req, res, next) {
     return;
   }
   const token = authorization.replace("Bearer ", "");
-  jwt.verify(token, "secretPasswordush", async (err, decoded) => {
+  jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
     if (err) {
       res.status(401).send({ message: "Invalid token" });
       return;
